@@ -19,7 +19,7 @@ public class ItemRepository {
         if(item.getId() == null){
             em.persist(item);//새로운 객체 생성
         }else {
-            em.merge(item);//Update 느낌
+            em.merge(item);//Update 느낌. 준영속 엔티티를 병합
         }
     }
 
