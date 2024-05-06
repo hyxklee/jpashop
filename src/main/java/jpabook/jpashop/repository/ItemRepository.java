@@ -15,12 +15,15 @@ public class ItemRepository {
 
     private final EntityManager em;
 
-    public void save(Item item){
-        if(item.getId() == null){
-            em.persist(item);//새로운 객체 생성
-        }else {
-            em.merge(item);//Update 느낌. 준영속 엔티티를 병합
-        }
+//    public void save(Item item){
+//        if(item.getId() == null){
+//            em.persist(item);//새로운 객체 생성
+//        }else {
+//            em.merge(item);//Update 느낌. 준영속 엔티티를 병합
+//        }
+//    }
+    public void save(Item item) {
+        em.persist(item);
     }
 
     public Item findOne(Long id){

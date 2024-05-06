@@ -27,7 +27,6 @@ public class ItemController {
      */
     @GetMapping("/items/new")
     public String createForm(Model model){
-
         model.addAttribute("form", new BookForm());
         return "items/createItemForm";
     }
@@ -58,7 +57,7 @@ public class ItemController {
 
 
     /*
-    Item 수정 뷰
+    Item 수정 뷰.뷰에서 바인딩한 item을 가져와서 뷰로 보여줌
      */
 
     @GetMapping("items/{itemId}/edit")
@@ -78,13 +77,14 @@ public class ItemController {
         model.addAttribute("form", form);
         return "items/updateItemForm";
     }
+
 //    /*
-//    뷰에서 바인딩한 item을 가져와서 뷰로 보여주고 같은 item에 대한 재저장
+//    form에 입력한 내용을 BookForm 객체로 바인딩해서 Book 객체를 새롭게 생성해 수정하여 저장(merge)
 //     */
-//
+//    //merge()를 사용한 방법
 //    @PostMapping("/items/{itemid}/edit")
 //    public String updateItem(@ModelAttribute("form") BookForm form){
-//        Book book = new Book();
+//        Book book = new Book(); //준영속 엔티티. (DB에 저장된 ID를 가져왔기 때문에 준영속)
 //        book.setId(form.getId());
 //        book.setName(form.getName());
 //        book.setPrice(form.getPrice());
@@ -92,20 +92,22 @@ public class ItemController {
 //        book.setAuthor(form.getAuthor());
 //        book.setIsbn(form.getIsbn());
 //
-//        itemService.saveItem(book);//id가 같으니까 업데이트 되는 효과일 듯. ItemRepository에서 merge 설정을 해뒀음
+//        itemService.saveItem(book);//ItemRepository에서 merge(). 변경감지가 아닌 merge를 사용한 방법
 //        return "redirect:/items";
 //    }
 
-    /*
-    컨트롤러에서 엔티티를 생성해서 저장하지 않고 트랜잭션이 있는 서비스 계층에 전달하여 서비스 계층에서 변경. 저장
-     */
 
     /*
     수정한 코드
      */
     @PostMapping("/items/{itemId}/edit")
-    public String updateItem(@PathVariable Long itemId, @ModelAttribute("form") BookForm form){
+    public String updateItem(@PathVariable("itemId") Long itemId, @ModelAttribute("form") BookForm form){
         itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
         return "redirect:/items";
     }
+    /*
+    컨트롤러는 레포지토리를 모르기 때문에 UpdateItem 로직은 서비스 계층에서 짜는 것이 맞음
+    서비스 계층을 확인해보면 영속 엔티티를 조회해서 수정하여 변경 감지를 통해 UPDATE 함
+    merge를 사용하지 않기 때문에 ItemRepository의 Save 로직에 merge를 빼도 될 듯
+     */
 }
